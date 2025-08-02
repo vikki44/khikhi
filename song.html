@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> Playlist For You</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- AOS Animation Library -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+    <style>
+        .glass {
+            background: rgba(255, 255, 255, 0.35);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.25);
+        }
+
+        .typing-text {
+            overflow: hidden;
+            white-space: nowrap;
+            animation: typing 3.5s steps(40, end);
+        }
+
+        @keyframes typing {
+            from {
+                width: 0
+            }
+
+            to {
+                width: 100%
+            }
+        }
+
+        .pulse {
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(0.95);
+            }
+
+            50% {
+                transform: scale(1.05);
+            }
+
+            100% {
+                transform: scale(0.95);
+            }
+        }
+
+        .equalizer {
+            display: flex;
+            align-items: flex-end;
+            height: 20px;
+            width: 50px;
+        }
+
+        .bar {
+            width: 4px;
+            margin: 0 1px;
+            background: linear-gradient(to top, #ff88cc, #ffaad5);
+            animation: equalize 1s infinite;
+        }
+
+        .bar:nth-child(1) {
+            animation-delay: 0.1s;
+            height: 15px;
+        }
+
+        .bar:nth-child(2) {
+            animation-delay: 0.2s;
+            height: 10px;
+        }
+
+        .bar:nth-child(3) {
+            animation-delay: 0.3s;
+            height: 18px;
+        }
+
+        .bar:nth-child(4) {
+            animation-delay: 0.4s;
+            height: 8px;
+        }
+
+        .bar:nth-child(5) {
+            animation-delay: 0.5s;
+            height: 12px;
+        }
+
+        @keyframes equalize {
+            0% {
+                height: 3px;
+            }
+
+            50% {
+                height: 15px;
+            }
+
+            100% {
+                height: 3px;
+            }
+        }
+
+        body {
+            background: linear-gradient(135deg,
+                    #f0dede,
+                    #f5bcd4,
+                    #dccdf5,
+                    #f5bcd4,
+                    #f0dede);
+            background-size: 600% 600%;
+            animation: pastelShift 10s ease infinite;
+            min-height: 100vh;
+            background-attachment: fixed;
+            margin: 0;
+            padding: 0;
+        }
+
+        @keyframes pastelShift {
+            0% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+
+
+
+        .particles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .particle {
+            position: absolute;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='rgba(255, 182, 193, 0.4)' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z'%3E%3C/path%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            opacity: 0.6;
+            width: 24px;
+            height: 24px;
+            animation: float 10s linear infinite;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(0) rotate(0deg);
+                opacity: 0;
+            }
+
+            10% {
+                opacity: 0.6;
+            }
+
+            90% {
+                opacity: 0.6;
+            }
+
+            100% {
+                transform: translateY(-100vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        .song-card {
+            transition: all 0.4s ease;
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: 0 10px 25px rgba(255, 105, 180, 0.15);
+        }
+
+        .song-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 35px rgba(255, 105, 180, 0.25);
+        }
+
+        .song-thumbnail {
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+
+        .play-btn {
+            transition: all 0.3s ease;
+        }
+
+        .play-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 15px rgba(255, 105, 180, 0.5);
+        }
+
+        .song-details {
+            position: relative;
+            z-index: 2;
+        }
+
+        .shine-effect {
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(to right,
+                    rgba(255, 255, 255, 0) 0%,
+                    rgba(255, 255, 255, 0.3) 50%,
+                    rgba(255, 255, 255, 0) 100%);
+            transform: rotate(30deg);
+            animation: shine 6s infinite;
+        }
+
+        @keyframes shine {
+            0% {
+                transform: rotate(30deg) translateX(-100%);
+            }
+
+            20% {
+                transform: rotate(30deg) translateX(100%);
+            }
+
+            100% {
+                transform: rotate(30deg) translateX(100%);
+            }
+        }
+    </style>
+</head>
+
+<body class="font-sans text-gray-800">
+    <!-- Background Particles -->
+    <div class="particles"></div>
+
+    <!-- Main Container -->
+    <div class="container mx-auto px-4 py-8">
+        <!-- Header Section -->
+        <div class="text-center mb-10" data-aos="fade-down" data-aos-duration="1000">
+            <h1 class="text-5xl font-bold mb-3 text-pink-600 font-serif">Songs You May Like 💖🎶</h1>
+            <p class="text-lg text-purple-700 italic max-w-2xl mx-auto font-light">I Hope This Brings A Smile On Your
+                Cute Face ✨🌸</p>
+        </div>
+
+        <!-- Search Bar -->
+        <div class="mb-8 max-w-md mx-auto" data-aos="fade-up" data-aos-duration="800">
+            <div class="glass rounded-full px-5 py-3 flex items-center shadow-lg">
+                <i class="fas fa-search text-pink-400 mr-3"></i>
+                <input type="text" id="search" placeholder="Find our song..."
+                    class="bg-transparent w-full focus:outline-none placeholder-pink-300 text-pink-600">
+            </div>
+        </div>
+
+        <!-- Playlist Grid - Now with 3 columns on large screens -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-20">
+            <!-- Song Card 1 -->
+            <div class="song-card glass p-5 relative overflow-hidden" data-aos="fade-up" data-aos-duration="1000">
+                <div class="shine-effect"></div>
+                <div class="absolute top-3 right-3 text-pink-400">
+                    <i class="fas fa-heart text-xl"></i>
+                </div>
+
+                <div class="song-thumbnail mb-4 relative">
+                    <img src="s1.jpg" alt="Song thumbnail" class="w-full h-40 object-cover rounded-2xl">
+                    <div
+                        class="absolute inset-0 bg-black bg-opacity-30 rounded-2xl flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity duration-300">
+                        <button
+                            class="play-btn bg-pink-500 hover:bg-pink-600 text-white rounded-full w-14 h-14 flex items-center justify-center shadow-lg transition-all">
+                            <i class="fas fa-play text-lg"></i>
+                        </button>
+                    </div>
+                </div>
+
+
+                <div class="song-details">
+                    <div class="flex items-center justify-between mb-2">
+                        <h3 class="text-xl font-bold text-pink-600">Perfect</h3>
+                        <div class="equalizer hidden">
+                            <div class="bar"></div>
+                            <div class="bar"></div>
+                            <div class="bar"></div>
+                            <div class="bar"></div>
+                            <div class="bar"></div>
+                        </div>
+                    </div>
+                    <p class="text-purple-500 mb-3 text-sm">Ed Sheeran</p>
+
+                    <div class="flex items-center text-xs text-pink-400 mb-3">
+                        <span><i class="fas fa-clock mr-1"></i> 4:23</span>
+                    </div>
+                </div>
+
+                <audio class="hidden" src="./Perfect-(Mr-Jat.in).mp3"></audio>
+
+                <div
+                    class="hidden memory opacity-0 transition-all duration-500 mt-3 text-center italic text-pink-600 text-sm">
+                    <p class="typing-text">This is My fwrt So im keeping this</p>
+                </div>
+
+                <div class="mt-3 pt-3 border-t border-pink-100 flex justify-between items-center">
+                    <button class="text-pink-500 hover:text-pink-700">
+                        <i class="fas fa-heart mr-1"></i> Favorite
+                    </button>
+                </div>
+            </div>
+
+            <!-- Song Card 2 -->
+            <div class="song-card glass p-5 relative overflow-hidden" data-aos="fade-up" data-aos-duration="1000"
+                data-aos-delay="100">
+                <div class="shine-effect"></div>
+                <div class="absolute top-3 right-3 text-pink-400">
+                    <i class="fas fa-heart text-xl"></i>
+                </div>
+
+                <div class="song-thumbnail mb-4 relative">
+                    <img src="s2.jpg" alt="Song thumbnail" class="w-full h-40 object-cover rounded-2xl">
+                    <div
+                        class="absolute inset-0 bg-black bg-opacity-30 rounded-2xl flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity duration-300">
+                        <button
+                            class="play-btn bg-pink-500 hover:bg-pink-600 text-white rounded-full w-14 h-14 flex items-center justify-center shadow-lg transition-all">
+                            <i class="fas fa-play text-lg"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="song-details">
+                    <div class="flex items-center justify-between mb-2">
+                        <h3 class="text-xl font-bold text-pink-600">Saware</h3>
+                        <div class="equalizer hidden">
+                            <div class="bar"></div>
+                            <div class="bar"></div>
+                            <div class="bar"></div>
+                            <div class="bar"></div>
+                            <div class="bar"></div>
+                        </div>
+                    </div>
+                    <p class="text-purple-500 mb-3 text-sm">Amitabh Bhattacharya, Arijit Singh, and Pritam Chakraborty
+                    </p>
+
+                    <div class="flex items-center text-xs text-pink-400 mb-3">
+                        <span><i class="fas fa-clock mr-1"></i> 5:21</span>
+                    </div>
+                </div>
+
+                <audio class="hidden" src="./Saware.mp3"></audio>
+
+                <div
+                    class="hidden memory opacity-0 transition-all duration-500 mt-3 text-center italic text-pink-600 text-sm">
+                    <p class="typing-text">I had sung this for you</p>
+                </div>
+
+                <div class="mt-3 pt-3 border-t border-pink-100 flex justify-between items-center">
+                    <button class="text-pink-500 hover:text-pink-700">
+                        <i class="fas fa-heart mr-1"></i> Favorite
+                    </button>
+                </div>
+            </div>
+
+            <!-- Song Card 3 -->
+            <div class="song-card glass p-5 relative overflow-hidden" data-aos="fade-up" data-aos-duration="1000"
+                data-aos-delay="200">
+                <div class="shine-effect"></div>
+                <div class="absolute top-3 right-3 text-pink-400">
+                    <i class="fas fa-heart text-xl"></i>
+                </div>
+
+                <div class="song-thumbnail mb-4 relative">
+                    <img src="./s3.jpg" alt="Song thumbnail" class="w-full h-40 object-cover rounded-2xl">
+                    <div
+                        class="absolute inset-0 bg-black bg-opacity-30 rounded-2xl flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity duration-300">
+                        <button
+                            class="play-btn bg-pink-500 hover:bg-pink-600 text-white rounded-full w-14 h-14 flex items-center justify-center shadow-lg transition-all">
+                            <i class="fas fa-play text-lg"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="song-details">
+                    <div class="flex items-center justify-between mb-2">
+                        <h3 class="text-xl font-bold text-pink-600">Humdard</h3>
+                        <div class="equalizer hidden">
+                            <div class="bar"></div>
+                            <div class="bar"></div>
+                            <div class="bar"></div>
+                            <div class="bar"></div>
+                            <div class="bar"></div>
+                        </div>
+                    </div>
+                    <p class="text-purple-500 mb-3 text-sm">Arjit Singh</p>
+
+                    <div class="flex items-center text-xs text-pink-400 mb-3">
+                        <span><i class="fas fa-clock mr-1"></i> 4:20</span>
+                    </div>
+                </div>
+
+                <audio class="hidden" src="./Humdard.mp3"></audio>
+
+                <div
+                    class="hidden memory opacity-0 transition-all duration-500 mt-3 text-center italic text-pink-600 text-sm">
+                    <p class="typing-text">The Lyrics Is So Good 🩷</p>
+                </div>
+
+                <div class="mt-3 pt-3 border-t border-pink-100 flex justify-between items-center">
+                    <button class="text-pink-500 hover:text-pink-700">
+                        <i class="fas fa-heart mr-1"></i> Favorite
+                    </button>
+                </div>
+            </div>
+
+            <!-- Song Card 4 -->
+            <div class="song-card glass p-5 relative overflow-hidden" data-aos="fade-up" data-aos-duration="1000"
+                data-aos-delay="300">
+                <div class="shine-effect"></div>
+                <div class="absolute top-3 right-3 text-pink-400">
+                    <i class="fas fa-heart text-xl"></i>
+                </div>
+
+                <div class="song-thumbnail mb-4 relative">
+                    <img src="./s4.jpg" alt="Song thumbnail" class="w-full h-40 object-cover rounded-2xl">
+                    <div
+                        class="absolute inset-0 bg-black bg-opacity-30 rounded-2xl flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity duration-300">
+                        <button
+                            class="play-btn bg-pink-500 hover:bg-pink-600 text-white rounded-full w-14 h-14 flex items-center justify-center shadow-lg transition-all">
+                            <i class="fas fa-play text-lg"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="song-details">
+                    <div class="flex items-center justify-between mb-2">
+                        <h3 class="text-xl font-bold text-pink-600">Ve Kamleya</h3>
+                        <div class="equalizer hidden">
+                            <div class="bar"></div>
+                            <div class="bar"></div>
+                            <div class="bar"></div>
+                            <div class="bar"></div>
+                            <div class="bar"></div>
+                        </div>
+                    </div>
+                    <p class="text-purple-500 mb-3 text-sm">Arijit Singh</p>
+
+                    <div class="flex items-center text-xs text-pink-400 mb-3">
+                        <span><i class="fas fa-clock mr-1"></i> 4:45</span>
+                    </div>
+                </div>
+
+                <audio class="hidden" src="./Ve Kamleya-(Mr-Jat.in).mp3"></audio>
+
+                <div
+                    class="hidden memory opacity-0 transition-all duration-500 mt-3 text-center italic text-pink-600 text-sm">
+                    <p class="typing-text">Cute Song ❤️</p>
+                </div>
+
+                <div class="mt-3 pt-3 border-t border-pink-100 flex justify-between items-center">
+                    <button class="text-pink-500 hover:text-pink-700">
+                        <i class="fas fa-heart mr-1"></i> Favorite
+                    </button>
+                </div>
+            </div>
+
+            <!-- Song Card 5 -->
+            <div class="song-card glass p-5 relative overflow-hidden" data-aos="fade-up" data-aos-duration="1000"
+                data-aos-delay="400">
+                <div class="shine-effect"></div>
+                <div class="absolute top-3 right-3 text-pink-400">
+                    <i class="fas fa-heart text-xl"></i>
+                </div>
+
+                <div class="song-thumbnail mb-4 relative">
+                    <img src="./s5.jpg" alt="Song thumbnail" class="w-full h-40 object-cover rounded-2xl">
+                    <div
+                        class="absolute inset-0 bg-black bg-opacity-30 rounded-2xl flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity duration-300">
+                        <button
+                            class="play-btn bg-pink-500 hover:bg-pink-600 text-white rounded-full w-14 h-14 flex items-center justify-center shadow-lg transition-all">
+                            <i class="fas fa-play text-lg"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="song-details">
+                    <div class="flex items-center justify-between mb-2">
+                        <h3 class="text-xl font-bold text-pink-600">Bahara</h3>
+                        <div class="equalizer hidden">
+                            <div class="bar"></div>
+                            <div class="bar"></div>
+                            <div class="bar"></div>
+                            <div class="bar"></div>
+                            <div class="bar"></div>
+                        </div>
+                    </div>
+                    <p class="text-purple-500 mb-3 text-sm">Shreya Goshal</p>
+
+                    <div class="flex items-center text-xs text-pink-400 mb-3">
+                        <span><i class="fas fa-clock mr-1"></i> 4:08</span>
+                    </div>
+                </div>
+
+                <audio class="hidden" src="./Bahara.mp3"></audio>
+
+                <div
+                    class="hidden memory opacity-0 transition-all duration-500 mt-3 text-center italic text-pink-600 text-sm">
+                    <p class="typing-text">Satisfactory Song  </p>
+                </div>
+
+                <div class="mt-3 pt-3 border-t border-pink-100 flex justify-between items-center">
+                    <button class="text-pink-500 hover:text-pink-700">
+                        <i class="fas fa-heart mr-1"></i> Favorite
+                    </button>
+                </div>
+            </div>
+
+            <!-- Song Card 6 -->
+            <div class="song-card glass p-5 relative overflow-hidden" data-aos="fade-up" data-aos-duration="1000"
+                data-aos-delay="500">
+                <div class="shine-effect"></div>
+                <div class="absolute top-3 right-3 text-pink-400">
+                    <i class="fas fa-heart text-xl"></i>
+                </div>
+
+                <div class="song-thumbnail mb-4 relative">
+                    <img src="./s6.jpg" alt="Song thumbnail" class="w-full h-40 object-cover rounded-2xl">
+                    <div
+                        class="absolute inset-0 bg-black bg-opacity-30 rounded-2xl flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity duration-300">
+                        <button
+                            class="play-btn bg-pink-500 hover:bg-pink-600 text-white rounded-full w-14 h-14 flex items-center justify-center shadow-lg transition-all">
+                            <i class="fas fa-play text-lg"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="song-details">
+                    <div class="flex items-center justify-between mb-2">
+                        <h3 class="text-xl font-bold text-pink-600">Jab Tak</h3>
+                        <div class="equalizer hidden">
+                            <div class="bar"></div>
+                            <div class="bar"></div>
+                            <div class="bar"></div>
+                            <div class="bar"></div>
+                            <div class="bar"></div>
+                        </div>
+                    </div>
+                    <p class="text-purple-500 mb-3 text-sm">Arman Malik</p>
+
+                    <div class="flex items-center text-xs text-pink-400 mb-3">
+                        <span><i class="fas fa-clock mr-1"></i> 3:30</span>
+                    </div>
+                </div>
+
+                <audio class="hidden" src="./Jab Tak.mp3"></audio>
+
+                <div
+                    class="hidden memory opacity-0 transition-all duration-500 mt-3 text-center italic text-pink-600 text-sm">
+                    <p class="typing-text">This Song is perfect</p>
+                </div>
+
+                <div class="mt-3 pt-3 border-t border-pink-100 flex justify-between items-center">
+                    <button class="text-pink-500 hover:text-pink-700">
+                        <i class="fas fa-heart mr-1"></i> Favorite
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Now Playing Bar -->
+        <div id="now-playing"
+            class="fixed bottom-0 left-0 w-full bg-white bg-opacity-70 backdrop-blur-md py-3 px-4 shadow-lg transform translate-y-full transition-transform duration-500 flex items-center justify-between">
+            <div class="flex items-center">
+                <div class="mr-3">
+                    <div class="w-12 h-12 rounded-full bg-pink-500 flex items-center justify-center text-white pulse">
+                        <i class="fas fa-music"></i>
+                    </div>
+                </div>
+                <div>
+                    <p class="font-bold text-pink-600">Now Playing:</p>
+                    <p id="current-song" class="text-purple-600">-</p>
+                </div>
+            </div>
+            <div class="flex items-center">
+                <button class="mx-2 text-pink-600 hover:text-pink-800 transition-colors">
+                    <i class="fas fa-pause"></i>
+                </button>
+            </div>
+            <div class="equalizer">
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
+            </div>
+<div class="flex items-center ml-6 space-x-3 group relative">
+    <!-- Dynamic Volume Icon -->
+    <i id="volume-icon" class="fas fa-volume-up text-pink-600 text-lg transition-all duration-300"></i>
+
+    <!-- Volume Slider -->
+    <div class="relative w-28 h-2 bg-gradient-to-r from-pink-400 to-purple-400 rounded-full overflow-hidden">
+        <input id="volume-slider" type="range" min="0" max="1" step="0.01" value="1"
+            class="absolute top-0 left-0 w-full h-full opacity-0 cursor-pointer z-10">
+        <div id="volume-fill" class="absolute top-0 left-0 h-full bg-pink-600" style="width: 100%;"></div>
+    </div>
+
+    <!-- Volume Tooltip -->
+    <div id="volume-tooltip"
+        class="absolute -top-7 left-10 text-xs bg-pink-600 text-white px-2 py-1 rounded shadow opacity-0 group-hover:opacity-100 transition duration-200 pointer-events-none">
+        100%
+    </div>
+</div>
+
+        </div>
+    </div>
+
+    <script>
+        let currentlyPlaying = null; // Global reference
+
+        document.addEventListener('DOMContentLoaded', function () {
+            AOS.init();
+            createParticles();
+            initializeSongCards();
+            initializeSearch();
+            setupNowPlayingControls();
+            setupAddSongButton();
+        });
+
+        function createParticles() {
+            const container = document.querySelector('.particles');
+            const particleCount = 20;
+
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + 'vw';
+                particle.style.top = Math.random() * 100 + 'vh';
+
+                const size = Math.random() * 15 + 10;
+                particle.style.width = size + 'px';
+                particle.style.height = size + 'px';
+
+                const duration = Math.random() * 30 + 20;
+                particle.style.animationDuration = duration + 's';
+
+                const delay = Math.random() * 20;
+                particle.style.animationDelay = delay + 's';
+
+                container.appendChild(particle);
+            }
+        }
+
+        function initializeSongCards() {
+            const songCards = document.querySelectorAll('.song-card');
+            const nowPlayingBar = document.getElementById('now-playing');
+            const currentSongElement = document.getElementById('current-song');
+
+            songCards.forEach(card => {
+                // Hover memory
+                card.addEventListener('mouseenter', function () {
+                    const memory = this.querySelector('.memory');
+                    memory.classList.remove('hidden');
+                    setTimeout(() => memory.classList.remove('opacity-0'), 100);
+                });
+
+                card.addEventListener('mouseleave', function () {
+                    const memory = this.querySelector('.memory');
+                    memory.classList.add('opacity-0');
+                    setTimeout(() => memory.classList.add('hidden'), 500);
+                });
+
+                const playBtn = card.querySelector('.play-btn');
+                const equalizer = card.querySelector('.equalizer');
+                const songTitle = card.querySelector('h3').textContent;
+                const artist = card.querySelector('p').textContent;
+
+                playBtn.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const audio = card.querySelector('audio');
+                    const nowPlayingIcon = document.querySelector('#now-playing .fa-play, #now-playing .fa-pause');
+
+                    // Stop previously playing song
+                    if (currentlyPlaying && currentlyPlaying !== card) {
+                        const prevPlayBtn = currentlyPlaying.querySelector('.play-btn');
+                        const prevEqualizer = currentlyPlaying.querySelector('.equalizer');
+                        const prevAudio = currentlyPlaying.querySelector('audio');
+
+                        prevPlayBtn.innerHTML = '<i class="fas fa-play text-lg"></i>';
+                        prevEqualizer.classList.add('hidden');
+                        if (prevAudio) {
+                            prevAudio.pause();
+                            prevAudio.currentTime = 0;
+                        }
+                    }
+
+                    if (currentlyPlaying === card) {
+                        // Pause current
+                        audio.pause();
+                        playBtn.innerHTML = '<i class="fas fa-play text-lg"></i>';
+                        equalizer.classList.add('hidden');
+                        nowPlayingBar.classList.add('translate-y-full');
+                        nowPlayingBar.classList.remove('translate-y-0');
+                        if (nowPlayingIcon) {
+                            nowPlayingIcon.classList.remove('fa-pause');
+                            nowPlayingIcon.classList.add('fa-play');
+                        }
+                        currentlyPlaying = null;
+                    } else {
+                        // Play selected
+                        audio.play();
+                        playBtn.innerHTML = '<i class="fas fa-pause text-lg"></i>';
+                        equalizer.classList.remove('hidden');
+                        currentSongElement.textContent = `${songTitle} - ${artist}`;
+                        nowPlayingBar.classList.remove('translate-y-full');
+                        nowPlayingBar.classList.add('translate-y-0');
+                        if (nowPlayingIcon) {
+                            nowPlayingIcon.classList.remove('fa-play');
+                            nowPlayingIcon.classList.add('fa-pause');
+                        }
+                        currentlyPlaying = card;
+                    }
+                });
+            });
+        }
+
+        function initializeSearch() {
+            const searchInput = document.getElementById('search');
+            const songCards = document.querySelectorAll('.song-card');
+
+            searchInput.addEventListener('input', function () {
+                const searchTerm = this.value.toLowerCase().trim();
+                songCards.forEach(card => {
+                    const title = card.querySelector('h3').textContent.toLowerCase();
+                    const artist = card.querySelector('p').textContent.toLowerCase();
+                    const tags = card.querySelector('.text-pink-400')?.textContent.toLowerCase() || '';
+
+                    if (title.includes(searchTerm) || artist.includes(searchTerm) || tags.includes(searchTerm)) {
+                        card.style.display = 'block';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+            });
+        }
+
+        function setupAddSongButton() {
+            const addButton = document.querySelector('.bg-pink-500.hover');
+            if (addButton) {
+                addButton.addEventListener('click', function () {
+                    alert('Soon you can add your special songs here! 💕');
+                });
+            }
+        }
+
+        function setupNowPlayingControls() {
+            const playPauseBtn = document.querySelector('#now-playing .fa-pause, #now-playing .fa-play')?.parentElement;
+                    const volumeSlider = document.getElementById('volume-slider');
+        const volumeIcon = document.getElementById('volume-icon');
+        const volumeFill = document.getElementById('volume-fill');
+        const volumeTooltip = document.getElementById('volume-tooltip');
+
+        if (!playPauseBtn) return;
+
+        playPauseBtn.addEventListener('click', function () {
+            if (!currentlyPlaying) return;
+
+            const icon = this.querySelector('i');
+            const playBtn = currentlyPlaying.querySelector('.play-btn');
+            const equalizer = currentlyPlaying.querySelector('.equalizer');
+            const audio = currentlyPlaying.querySelector('audio');
+
+            if (audio.paused) {
+                audio.play();
+                icon.classList.remove('fa-play');
+                icon.classList.add('fa-pause');
+                playBtn.innerHTML = '<i class="fas fa-pause text-lg"></i>';
+                equalizer.classList.remove('hidden');
+            } else {
+                audio.pause();
+                icon.classList.remove('fa-pause');
+                icon.classList.add('fa-play');
+                playBtn.innerHTML = '<i class="fas fa-play text-lg"></i>';
+                equalizer.classList.add('hidden');
+            }
+        });
+
+        volumeSlider?.addEventListener('input', function () {
+            const value = parseFloat(this.value);
+            const percent = Math.round(value * 100);
+
+            if (currentlyPlaying) {
+                const audio = currentlyPlaying.querySelector('audio');
+                audio.volume = value;
+            }
+
+            // Update fill bar width
+            volumeFill.style.width = `${percent}%`;
+
+            // Update icon
+            if (value === 0) {
+                volumeIcon.className = 'fas fa-volume-mute text-pink-600 text-lg';
+            } else if (value < 0.4) {
+                volumeIcon.className = 'fas fa-volume-down text-pink-600 text-lg';
+            } else {
+                volumeIcon.className = 'fas fa-volume-up text-pink-600 text-lg';
+            }
+
+            // Update tooltip
+            volumeTooltip.textContent = `${percent}%`;
+        });
+    }
+</script>
+</body>
+
+</html>
